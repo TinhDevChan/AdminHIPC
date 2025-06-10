@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HIPC</title>
+
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Font Awesome (cho icon spinner & mạng xã hội) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+
+  <style>
+    /* ==========================================
+       1. Toàn cục: Reset, Font, Position, v.v.
+       ========================================== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      position: relative;
+    }
+    body {
+      background: #000; /* nền tối để hiển thị particles */
+    }
+    /* Nền Particles.js */
+    #particles-js {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: -1; /* nằm dưới cùng */
+      background: #9cc3e4; /* fallback khi chưa load được */
+    }
+
+    /* ===========================
+       2. Coca-Cola Card (Splash) 
+       =========================== */
+    body, #cokeCard {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #cokeCard {
+      position: relative;
+      width: 350px; height: 350px;
+      border-radius: 20px;
+      background: transparent;
+      transition: 0.5s;
+      cursor: default;
+      z-index: 1; /* nằm trên particles */
+    }
+    #cokeCard:hover {
+      width: 600px;
+      transition-delay: 0.5s;
+    }
+    #cokeCard .circle {
+      position: absolute;
+      width: 100%; height: 100%;
+      border-radius: 20px;
+      display: flex; justify-content: center; align-items: center;
+    }
+    #cokeCard .circle::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 350px; height: 350px;
+      border-radius: 50%;
+      border: 8px solid var(--clr);
+      background: #191919;
+      transition: 0.5s, background 0.5s;
+      transition-delay: 0.75s, 1s;
+      filter: drop-shadow(0 0 10px var(--clr))
+              drop-shadow(0 0 60px var(--clr));
+    }
+    #cokeCard:hover .circle::before {
+      width: 100%; height: 100%;
+      border-radius: 20px;
+      background: var(--clr);
+      transition-delay: 0.5s;
+    }
+    #cokeCard .circle .logo {
+      position: relative;
+      width: 250px;
+      transition: 0.5s;
+      transition-delay: 0.5s;
+    }
+    #cokeCard:hover .circle .logo {
+      transform: scale(0);
+      transition-delay: 0s;
+    }
+    #cokeCard .product_img {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%) scale(0) rotate(315deg);
+      height: 200px;
+      transition: 0.5s ease-in-out;
+    }
+    #cokeCard:hover .product_img {
+      top: 45%; left: 75%;
+      height: 300px;
+      transform: translate(-50%, -50%) scale(1) rotate(15deg);
+      transition-delay: 0.75s;
+    }
+    #cokeCard .content {
+      position: absolute;
+      width: 50%;
+      left: 20%;
+      padding: 20px 20px 20px 40px;
+      opacity: 0; visibility: hidden;
+      transition: 0.5s;
+    }
+    #cokeCard:hover .content {
+      left: 0; opacity: 1; visibility: visible;
+      transition-delay: 0.75s;
+    }
+    #cokeCard .content h2 {
+      color: #fff;
+      text-transform: uppercase;
+      font-size: 2.4em;
+      line-height: 1em;
+      margin-bottom: 0.5em;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+    }
+    #cokeCard .content p {
+      color: #fff;
+      font-size: 0.95em;
+      margin-bottom: 1em;
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+    }
+    #cokeCard .content a {
+      position: relative;
+      color: #111;
+      background: #fff;
+      padding: 12px 24px;
+      border-radius: 10px;
+      display: inline-block;
+      text-decoration: none;
+      font-weight: 600;
+      margin-top: 10px;
+      transition: background 0.3s ease,
+                  transform 0.3s ease,
+                  box-shadow 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    #cokeCard .content a:hover {
+      background: #f1f1f1;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+    /* Biến màu glow cho border */
+    #cokeCard {
+      --clr: #e9a9a9;
+    }
+
+    /***********************************************
+     * 3. Login/Sign-Up Section (Overlay) (Ẩn mặc định) *
+     ***********************************************/
+    #loginContainer {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100vh;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      background: rgba(171, 232, 230, 0.8);
+      z-index: 2;
+    }
+    #loginContainer * {
+      margin: 0; padding: 0; box-sizing: border-box;
+      font-family: 'Montserrat', sans-serif;
+    }
+    #loginContainer .container {
+      background-color: rgba(255, 255, 255, 0.98);
+      border-radius: 30px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.35);
+      position: relative;
+      overflow: hidden;
+      width: 768px; max-width: 90%; min-height: 480px;
+    }
+    #loginContainer .container p {
+      font-size: 14px; line-height: 20px;
+      letter-spacing: 0.3px; margin: 20px 0; color: #333;
+    }
+    #loginContainer .container span {
+      font-size: 12px; color: #666;
+    }
+    #loginContainer .container a {
+      color: #333; font-size: 13px;
+      text-decoration: none; margin: 15px 0 10px;
+      display: inline-block; transition: color 0.2s ease;
+    }
+    #loginContainer .container a:hover {
+      color: #2da0a8;
+    }
+    #loginContainer .container button {
+      background-color: #2da0a8;
+      color: #fff;
+      font-size: 12px;
+      padding: 10px 45px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-top: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    #loginContainer .container button:hover {
+      background-color: #278b90;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+    #loginContainer .container button.hidden {
+      background-color: transparent;
+      border-color: #fff;
+    }
+    #loginContainer .container form {
+      background-color: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 0 40px;
+      height: 100%;
+    }
+    #loginContainer .container input {
+      background-color: #eee;
+      border: none;
+      margin: 8px 0;
+      padding: 10px 15px;
+      font-size: 13px;
+      border-radius: 8px;
+      width: 100%;
+      outline: none;
+      transition: box-shadow 0.2s ease;
+    }
+    #loginContainer .container input:focus {
+      box-shadow: 0 0 5px rgba(45, 160, 168, 0.5);
+      background-color: #fff;
+    }
+    #loginContainer .form-container {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      width: 50%;
+      transition: all 0.6s ease-in-out;
+    }
+    #loginContainer .sign-in {
+      left: 0; z-index: 2; transform: translateX(0);
+    }
+    #loginContainer .container.active .sign-in {
+      transform: translateX(-100%);
+    }
+    #loginContainer .sign-up {
+      left: 50%; z-index: 1; opacity: 0; transform: translateX(100%);
+    }
+    #loginContainer .container.active .sign-up {
+      transform: translateX(0); opacity: 1; z-index: 3;
+      transition: all 0.6s ease-in-out;
+    }
+    #loginContainer .social-icons {
+      margin: 20px 0;
+    }
+    #loginContainer .social-icons a {
+      border: 1px solid #ccc;
+      border-radius: 20%;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 3px;
+      width: 40px; height: 40px;
+      color: #333;
+      transition: background 0.3s ease, color 0.3s ease;
+      font-size: 1.2em;
+    }
+    #loginContainer .social-icons a:hover {
+      background: #f1f1f1;
+      color: #2da0a8;
+    }
+    #loginContainer .toggle-container {
+      position: absolute;
+      top: 0; left: 50%;
+      width: 50%; height: 100%;
+      overflow: hidden;
+      transition: all 0.6s ease-in-out;
+      border-radius: 150px 0 0 100px;
+      z-index: 1000;
+    }
+    #loginContainer .container.active .toggle-container {
+      transform: translateX(-100%);
+      border-radius: 0 150px 100px 0;
+    }
+    #loginContainer .toggle {
+      background: linear-gradient(to right, #5c6bc0, #2da0a8);
+      color: #fff;
+      position: relative;
+      left: -100%;
+      width: 200%; height: 100%;
+      transform: translateX(0);
+      transition: all 0.6s ease-in-out;
+    }
+    #loginContainer .container.active .toggle {
+      transform: translateX(50%);
+    }
+    #loginContainer .toggle-panel {
+      position: absolute;
+      width: 50%; height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 0 30px;
+      text-align: center;
+      top: 0;
+      transition: all 0.6s ease-in-out;
+    }
+    #loginContainer .toggle-left {
+      left: 0; transform: translateX(-200%);
+    }
+    #loginContainer .container.active .toggle-left {
+      transform: translateX(0);
+    }
+    #loginContainer .toggle-right {
+      right: 0; transform: translateX(0);
+    }
+    #loginContainer .container.active .toggle-right {
+      transform: translateX(200%);
+    }
+    #loginContainer .toggle-panel h1 {
+      font-size: 1.8em; margin-bottom: 0.5em; line-height: 1.2em;
+      color: #fff; text-shadow: 0 0 5px rgba(0,0,0,0.3);
+    }
+    #loginContainer .toggle-panel p {
+      font-size: 0.9em; line-height: 1.4em; margin-bottom: 1.5em;
+      color: #f0f0f0;
+    }
+    #loginContainer .toggle-panel button {
+      background-color: transparent;
+      border: 2px solid #fff;
+      color: #fff;
+      padding: 10px 30px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+    #loginContainer .toggle-panel button:hover {
+      background: rgba(255,255,255,0.2);
+      transform: translateY(-2px);
+    }
+
+    /********************
+     * 4. Toast thông báo *
+     ********************/
+    #toast {
+      position: fixed;
+      bottom: 30px; right: 30px;
+      background-color: #1abc9c;
+      color: #fff;
+      padding: 16px 24px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      font-size: 0.95rem;
+      display: none; /* ẩn mặc định */
+      opacity: 0;
+      z-index: 9999;
+      transition: opacity 0.5s ease;
+    }
+
+    /*******************************
+     * 5. Spinner Overlay (ẩn mặc định) *
+     *******************************/
+    #spinnerOverlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100vh;
+      background: rgba(0,0,0,0.6);
+      display: none; /* ẩn khi không dùng */
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+    }
+    #spinnerOverlay .fa-spinner {
+      font-size: 80px;
+      color: #1abc9c;
+      /* Quay chậm hơn: 2s/vòng, pulse vẫn 1.5s */
+      animation: spin 3s linear infinite, pulse 1.5s ease-in-out infinite alternate;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+    @keyframes pulse {
+      0%   { transform: rotate(0deg) scale(1); }
+      50%  { transform: rotate(180deg) scale(1.3); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+
+    /********************
+     * 6. Responsive    *
+     ********************/
+    @media (max-width: 768px) {
+      #cokeCard {
+        width: 300px; height: 300px;
+      }
+      #cokeCard:hover {
+        width: 500px;
+      }
+      #cokeCard .product_img {
+        height: 180px;
+      }
+      #cokeCard:hover .product_img {
+        height: 260px;
+      }
+      #loginContainer .container {
+        width: 90%;
+      }
+      #loginContainer .container form {
+        padding: 0 20px;
+      }
+      #loginContainer .social-icons a {
+        width: 36px; height: 36px; font-size: 1rem;
+      }
+      #loginContainer .toggle-panel h1 {
+        font-size: 1.5em;
+      }
+      #loginContainer .toggle-panel p {
+        font-size: 0.8em;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- =======================
+       1. Nền Particles.js
+       ======================= -->
+  <div id="particles-js"></div>
+
+  <!-- =======================
+       2. Splash Coca-Cola Card
+       ======================= -->
+  <div class="card" id="cokeCard">
+    <div class="circle">
+      <img src="logo.png" alt="Logo HIPC" class="logo" />
+    </div>
+    <div class="content">
+      <h2>ADMIN HIPC</h2>
+      <p>“Trải nghiệm quản lý chuyên nghiệp và hiệu năng vượt trội.”</p>
+      <a href="#" id="showLogin">Bắt Đầu</a>
+    </div>
+    <img src="logo.png" alt="Hình HIPC" class="product_img" />
+  </div>
+
+  <!-- ==============================================
+       3. Login/Sign-Up Section (Overlay) (Ẩn mặc định)
+       ============================================== -->
+  <div id="loginContainer">
+    <div class="container" id="container">
+      <!-- Panel “Sign Up” -->
+      <div class="form-container sign-up">
+        <form id="formRegister">
+          <h1>Create Account</h1>
+          <div class="social-icons">
+            <a href="#" class="icon"><i class="fab fa-google-plus-g"></i></a>
+            <a href="#" class="icon"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="icon"><i class="fab fa-github"></i></a>
+            <a href="#" class="icon"><i class="fab fa-linkedin-in"></i></a>
+          </div>
+          <span>or use your email for registration</span>
+          <input type="text" placeholder="Name" id="registerName" required />
+          <input type="email" placeholder="Email" id="registerEmail" required />
+          <input type="password" placeholder="Password" id="registerPassword" required />
+          <button type="submit">Sign Up</button>
+        </form>
+      </div>
+
+      <!-- Panel “Sign In” -->
+      <div class="form-container sign-in">
+        <form id="formLogin">
+          <h1>Đăng Nhập</h1>
+          <div class="social-icons">
+            <a href="#" class="icon"><i class="fab fa-google-plus-g"></i></a>
+            <a href="#" class="icon"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="icon"><i class="fab fa-github"></i></a>
+            <a href="#" class="icon"><i class="fab fa-linkedin-in"></i></a>
+          </div>
+          <span>Nhập thông tin để đăng nhập</span>
+          <input type="email" placeholder="Email" id="loginEmail" required />
+          <input type="password" placeholder="Password" id="loginPassword" required />
+          <a href="#">Quên Mật Khẩu?</a>
+          <button type="submit">Đăng Nhập</button>
+        </form>
+      </div>
+
+      <!-- Sliding Toggle Panels Bên Phải -->
+      <div class="toggle-container">
+        <div class="toggle">
+          <div class="toggle-panel toggle-left">
+            <h1>Chào Mừng Trở Lại!</h1>
+            <p>Nhập thông tin cá nhân của bạn để sử dụng tất cả các tính năng của trang web.</p>
+            <button class="hidden" id="login">Sign In</button>
+          </div>
+          <div class="toggle-panel toggle-right">
+            <h1>Hello, Friend!</h1>
+            <p>Đăng ký với thông tin cá nhân của bạn để sử dụng tất cả các tính năng của trang web.</p>
+            <button class="hidden" id="register">Đăng Ký</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================
+       4. Toast thông báo
+       ===================== -->
+  <div id="toast"></div>
+
+  <!-- ===========================
+       5. Spinner Overlay (ẩn mặc định)
+       =========================== -->
+  <div id="spinnerOverlay">
+    <i class="fas fa-spinner"></i>
+  </div>
+
+  <!-- ================================
+       6. JavaScript (Particles + Toggle + API + Spinner)
+       ================================ -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+  <script>
+    // Khởi tạo Particles.js
+    particlesJS('particles-js',
+      {
+        "particles": {
+          "number": { "value": 80, "density": { "enable": true, "value_area": 800 } },
+          "color": { "value": "#ffffff" },
+          "shape": {
+            "type": "circle",
+            "stroke": { "width": 0, "color": "#000000" },
+            "polygon": { "nb_sides": 5 }
+          },
+          "opacity": {
+            "value": 0.5,
+            "random": false,
+            "anim": { "enable": false, "speed": 1, "opacity_min": 0.1, "sync": false }
+          },
+          "size": {
+            "value": 3,
+            "random": true,
+            "anim": { "enable": false, "speed": 40, "size_min": 0.1, "sync": false }
+          },
+          "line_linked": {
+            "enable": true,
+            "distance": 150,
+            "color": "#ffffff",
+            "opacity": 0.4,
+            "width": 1
+          },
+          "move": {
+            "enable": true,
+            "speed": 3,
+            "direction": "none",
+            "random": false,
+            "straight": false,
+            "out_mode": "out",
+            "bounce": false,
+            "attract": { "enable": false, "rotateX": 600, "rotateY": 1200 }
+          }
+        },
+        "interactivity": {
+          "detect_on": "canvas",
+          "events": {
+            "onhover": { "enable": true, "mode": "grab" },
+            "onclick": { "enable": true, "mode": "push" },
+            "resize": true
+          },
+          "modes": {
+            "grab": { "distance": 140, "line_linked": { "opacity": 1 } },
+            "bubble": { "distance": 400, "size": 40, "duration": 2, "opacity": 8, "speed": 3 },
+            "repulse": { "distance": 200, "duration": 0.4 },
+            "push": { "particles_nb": 4 },
+            "remove": { "particles_nb": 2 }
+          }
+        },
+        "retina_detect": true
+      }
+    );
+
+    // Khi click "Bắt Đầu": ẩn splash, hiện login overlay
+    document.getElementById('showLogin').addEventListener('click', function(e) {
+      e.preventDefault();
+      document.getElementById('cokeCard').style.display = 'none';
+      document.getElementById('loginContainer').style.display = 'flex';
+    });
+
+    // Toggle Sign In / Sign Up
+    const registerBtn = document.getElementById('register');
+    const loginBtn = document.getElementById('login');
+    const container = document.getElementById('container');
+
+    registerBtn.addEventListener('click', () => {
+      container.classList.add('active');
+    });
+    loginBtn.addEventListener('click', () => {
+      container.classList.remove('active');
+    });
+
+    // Hiển thị toast
+    function showToast(message, isError = false) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.style.backgroundColor = isError ? '#e74c3c' : '#1abc9c';
+      toast.style.display = 'block';
+      toast.style.opacity = '1';
+      // Ẩn dần sau 3 giây
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => {
+          toast.style.display = 'none';
+        }, 500);
+      }, 3000);
+    }
+
+    // Bật / tắt spinner
+    function showSpinner(show) {
+      const spinner = document.getElementById('spinnerOverlay');
+      spinner.style.display = show ? 'flex' : 'none';
+    }
+
+    // Xử lý form Đăng Nhập
+    document.getElementById('formLogin').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      // 1) Bật spinner
+      showSpinner(true);
+      // 2) Hiện toast "Đang đăng nhập..."
+      showToast('Đang đăng nhập, xin chờ...', false);
+
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+
+      try {
+        const response = await fetch('https://hipc-sever.onrender.com/users/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Khi API ok: hiện toast thành công, giữ spinner chạy thêm 5s
+          showToast('Đăng nhập thành công! Chuyển hướng sau 3s...', false);
+          localStorage.setItem('token', data.token);
+
+          // Chuyển hướng sau 5s, đồng thời ẩn spinner
+          setTimeout(() => {
+            showSpinner(false);
+            window.location.href = 'index2.html';
+          }, 3000);
+
+        } else {
+          // Nếu API trả về lỗi: show toast lỗi, ẩn spinner sau 3s
+          showToast(data.message || 'Đăng nhập thất bại', true);
+          setTimeout(() => {
+            showSpinner(false);
+          }, 3000);
+        }
+      } catch (err) {
+        // Lỗi mạng/server: show toast lỗi, ẩn spinner sau 3s
+        showToast('Không thể kết nối tới server', true);
+        setTimeout(() => {
+          showSpinner(false);
+        }, 3000);
+        console.error(err);
+      }
+    });
+
+    // Xử lý form Sign Up (nếu cần)
+    document.getElementById('formRegister').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const full_name = document.getElementById('registerName').value.trim();
+      const email = document.getElementById('registerEmail').value.trim();
+      const password = document.getElementById('registerPassword').value;
+
+      try {
+        const response = await fetch('http://localhost:3000/users/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ full_name, email, password, phone: '', address: '' })
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          showToast('Đăng ký thành công! Hãy đăng nhập.', false);
+          container.classList.remove('active');
+        } else {
+          showToast(data.message || 'Đăng ký thất bại', true);
+        }
+      } catch (err) {
+        showToast('Không thể kết nối tới server', true);
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>

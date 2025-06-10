@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin - Quản lý Người dùng</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Boxicons -->
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+
+  <style>
+    :root{--primary:#4a90e2;--secondary:#f5f7fa;--bg:#fff;--text:#333;--radius:8px;--trans:0.3s}
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif}
+    body{background:var(--secondary);color:var(--text)}
+    header{position:fixed;top:0;left:0;width:100%;background:#2c3e50;display:flex;align-items:center;justify-content:space-between;padding:12px 40px;z-index:10;transition:background .3s,box-shadow .3s}
+    header .logo-admin img{max-height:40px}
+    #menuBtn{font-size:1.8rem;color:#ecf0f1;cursor:pointer;display:none}
+    nav{display:flex}
+    nav ul{display:flex;list-style:none}
+    nav li{margin-left:24px}
+    nav a{text-decoration:none;color:#ecf0f1;display:flex;align-items:center;font-weight:500;transition:color .2s}
+    nav a i{margin-right:6px}
+    nav a:hover{color:#1abc9c}
+    header.scrolled{background:#23303b;box-shadow:0 2px 8px rgba(0,0,0,0.3)}
+    @media(max-width:768px){#menuBtn{display:block}nav{position:absolute;top:100%;left:0;width:100%;background:#34495e;flex-direction:column;align-items:flex-start;max-height:0;overflow:hidden;transition:max-height .3s}nav.active{max-height:400px}nav ul{flex-direction:column;width:100%}nav li a{padding:12px 24px;width:100%}}
+
+    .container{max-width:1200px;margin:100px auto 40px;padding:0 20px}
+    .header-actions{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+    .header-actions input{padding:10px 15px;border:1px solid #ccc;border-radius:var(--radius);width:250px;transition:border-color var(--trans)}
+    .header-actions input:focus{border-color:var(--primary);outline:none}
+    .btn{display:inline-flex;align-items:center;gap:5px;padding:10px 20px;background:var(--primary);color:#fff;border:none;border-radius:var(--radius);cursor:pointer;transition:background var(--trans),transform var(--trans)}
+    .btn:hover{background:#357ab8;transform:translateY(-2px)}
+    table{width:100%;border-collapse:collapse;background:var(--bg);border-radius:var(--radius);overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+    thead{background:var(--primary);color:#fff}
+    th,td{padding:12px 15px;text-align:left}
+    tbody tr:nth-child(even){background:#f9f9f9}
+    tbody tr:hover{background:#eef4fc}
+    .actions i{font-size:1.2rem;margin-right:10px;cursor:pointer;transition:color var(--trans),transform var(--trans)}
+    .actions i.edit:hover{color:#2ecc71;transform:translateY(-2px)}
+    .actions i.delete:hover{color:#e74c3c;transform:translateY(-2px)}
+
+    footer{background:#2c3e50;padding:24px 40px;color:#ecf0f1;display:flex;flex-wrap:wrap;justify-content:space-between;gap:24px}
+    .footer-section{flex:1 1 220px;min-width:220px}
+    .footer-section h4{margin-bottom:12px;font-weight:600;color:#fff}
+    .footer-section p,.footer-section li,.footer-section a{font-size:.9rem;color:#bdc3c7;line-height:1.6;text-decoration:none}
+    .footer-section a:hover{color:#1abc9c}
+    .social-links a{margin-right:12px;font-size:1.4rem;color:#bdc3c7;transition:color .2s}
+    .social-links a:hover{color:#1abc9c}
+    .footer-bottom{width:100%;text-align:center;margin-top:24px;font-size:.85rem;color:#95a5a6}
+    .chatbot-icon{position:fixed;bottom:24px;right:24px;font-size:2rem;color:#1abc9c;cursor:pointer;animation:pulse 2s infinite;z-index:20}
+    @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header id="mainHeader">
+    <a href="#" class="logo-admin"><img src="logo.png" alt="Logo" /></a>
+    <i class="fas fa-bars" id="menuBtn"></i>
+    <nav id="mainNav"><ul>
+      <li><a href="/admin"><i class="fas fa-home"></i>Trang chủ</a></li>
+      <li><a href="/admin/users"><i class="fas fa-users"></i>Người dùng</a></li>
+      <li><a href="/admin/products"><i class="fas fa-box-open"></i>Sản phẩm</a></li>
+      <li><a href="/admin/categories"><i class="fas fa-tags"></i>Danh mục</a></li>
+      <li><a href="/admin/orders"><i class="fas fa-shopping-cart"></i>Đơn hàng</a></li>
+      <li><a href="/admin/reports"><i class="fas fa-chart-line"></i>Báo cáo</a></li>
+      <li><a href="/logout"><i class="fas fa-sign-out-alt"></i>Đăng xuất</a></li>
+    </ul></nav>
+  </header>
+
+  <div class="container">
+    <div class="header-actions">
+      <input type="text" id="searchInput" placeholder="Tìm người dùng...">
+      <button class="btn" id="addUserBtn"><i class='bx bx-user-plus'></i> Thêm Người dùng</button>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Họ & Tên</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Địa chỉ</th>
+        <th>Vai trò</th>
+        <th>Ngày tạo</th>
+        <th>Hành động</th>
+      </tr></thead>
+      <tbody id="userTable"></tbody>
+    </table>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-section">
+      <h4>HIPC Công ty TNHH</h4>
+      <p>Địa chỉ: Số 123, Đường ABC, Quận XYZ, TP. HCM<br>Điện thoại: (028) 1234 5678<br>Email: support@hipc.vn</p>
+    </div>
+    <div class="footer-section">
+      <h4>Liên kết nhanh</h4>
+      <ul style="list-style:none;padding:0;">
+        <li><a href="/admin/users">Quản lý người dùng</a></li>
+        <li><a href="/admin/products">Quản lý sản phẩm</a></li>
+        <li><a href="/admin/categories">Quản lý danh mục</a></li>
+        <li><a href="/admin/orders">Quản lý đơn hàng</a></li>
+        <li><a href="/admin/reports">Quản lý báo cáo</a></li>
+      </ul>
+    </div>
+    <div class="footer-section social-links">
+      <h4>Kết nối với chúng tôi</h4>
+      <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+      <a href="#" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+      <a href="#" title="Youtube"><i class="fab fa-youtube"></i></a>
+      <a href="#" title="Github"><i class="fab fa-github"></i></a>
+    </div>
+    <div class="footer-bottom">&copy; 2025 HIPC Công ty TNHH. Bản quyền thuộc về HIPC.</div>
+  </footer>
+
+  <i class="fas fa-comments chatbot-icon"></i>
+
+  <script>
+    // Toggle mobile menu & header scroll
+    const menuBtn=document.getElementById('menuBtn'),nav=document.getElementById('mainNav'),hdr=document.getElementById('mainHeader');
+    menuBtn.addEventListener('click',()=>{nav.classList.toggle('active');menuBtn.classList.toggle('fa-times');});
+    window.addEventListener('scroll',()=>hdr.classList.toggle('scrolled',window.scrollY>50));
+
+    // Fetch users
+    const apiURL='https://hipc-sever.onrender.com/users/all',tbl=document.getElementById('userTable');
+    async function fetchUsers(){try{const res=await fetch(apiURL),data=await res.json();renderUsers(data);}catch{tbl.innerHTML='<tr><td colspan="7">Không thể tải dữ liệu.</td></tr>'}}
+    function renderUsers(users){tbl.innerHTML='';users.forEach(u=>{const r=document.createElement('tr');r.innerHTML=`
+      <td>${u.full_name}</td>
+      <td>${u.email}</td>
+      <td>${u.phone}</td>
+      <td>${u.address}</td>
+      <td>${u.role}</td>
+      <td>${new Date(u.created_at).toLocaleDateString('vi-VN')}</td>
+      <td class="actions">
+        <i class='bx bx-edit edit' title="Chỉnh sửa"></i>
+        <i class='bx bx-trash delete' title="Xóa"></i>
+      </td>
+    `;tbl.appendChild(r);});}
+    // Search filter
+    document.getElementById('searchInput').addEventListener('input',e=>{const v=e.target.value.toLowerCase();document.querySelectorAll('#userTable tr').forEach(r=>{r.style.display=r.cells[0].textContent.toLowerCase().includes(v)||r.cells[1].textContent.toLowerCase().includes(v)?'':'none';});});
+    fetchUsers();
+  </script>
+</body>
+</html>

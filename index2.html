@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trang Home Admin PC</title>
+
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Font Awesome để sử dụng icon -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+  />
+
+  <!-- Animate.css cho hiệu ứng -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+  />
+
+  <style>
+    /* =============================================
+       1. Cấu hình chung, Reset và Nền động Particles
+       ============================================= */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow-x: hidden;
+      background: #f0f0f0; /* nền chính màu xám nhạt */
+      position: relative;
+      color: #2c3e50; /* chữ charcoal */
+    }
+
+    /* Nền Particles.js chiếm toàn màn hình, nằm phía dưới */
+    #particles-js {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background: #ffffff; /* nền trắng làm lớp dưới particles */
+    }
+    /* Overlay gradient đổi màu nhẹ trên nền */
+    #particles-js::after {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(45deg, rgba(26, 188, 156, 0.15), rgba(52, 73, 94, 0.15));
+      pointer-events: none;
+      animation: hueShift 10s infinite alternate;
+    }
+    @keyframes hueShift {
+      0% { filter: hue-rotate(0deg); }
+      100% { filter: hue-rotate(360deg); }
+    }
+
+    /* =================================================
+       2. Header: Logo + Menu điều hướng
+       ================================================= */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: #2c3e50; /* navy */
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 40px;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+    }
+    /* Icon trang trí header */
+    .decorative-icon {
+      position: absolute;
+      color: #1abc9c; /* teal */
+      font-size: 1.2rem;
+      opacity: 0.8;
+      animation: float 4s ease-in-out infinite;
+    }
+    .decorative-icon.left {
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    .decorative-icon.right {
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(-50%) translateX(0); }
+      50% { transform: translateY(-60%) translateX(0); }
+    }
+
+    /* Logo container */
+    header .logo-admin {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+    }
+    /* Kích thước cho ảnh logo */
+    .logo-img {
+      max-height: 40px;
+      width: auto;
+    }
+
+    /* Hamburger icon */
+    #menuBtn {
+      font-size: 1.8rem;
+      color: #ecf0f1; /* trắng nhạt */
+      cursor: pointer;
+      display: none; /* ẩn mặc định trên desktop */
+    }
+
+    header nav {
+      display: flex;
+      align-items: center;
+    }
+    header nav ul {
+      display: flex;
+      list-style: none;
+    }
+    header nav li {
+      margin-left: 24px;
+    }
+    header nav a {
+      color: #ecf0f1; /* trắng nhạt */
+      text-decoration: none;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      transition: color 0.2s ease;
+    }
+    header nav a i {
+      margin-right: 6px;
+    }
+    header nav a:hover {
+      color: #1abc9c; /* teal */
+    }
+    /* Thanh menu hạ xuống khi scroll */
+    header.scrolled {
+      background: #23303b; /* Navy đậm hơn khi scroll */
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Khi màn hình nhỏ (≤ 768px), ẩn menu và hiện hamburger */
+    @media (max-width: 768px) {
+      header {
+        padding: 12px 24px;
+      }
+      header nav {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: #34495e; /* dark gray/navy */
+        flex-direction: column;
+        align-items: flex-start;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+      }
+      header nav ul {
+        flex-direction: column;
+        width: 100%;
+      }
+      header nav li {
+        width: 100%;
+      }
+      header nav li a {
+        padding: 12px 24px;
+        width: 100%;
+      }
+      /* Khi nav có class "active", cho phép hiển thị */
+      header nav.active {
+        max-height: 400px; /* tăng giá trị nếu cần chứa nhiều mục */
+      }
+      /* Hiện hamburger */
+      #menuBtn {
+        display: block;
+      }
+    }
+
+    /* =================================================
+       3. Main Dashboard: Grid các Card chức năng
+       ================================================= */
+    main {
+      padding: 100px 40px 40px; /* dành chỗ cho header cố định */
+      min-height: calc(100vh - 100px);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 28px;
+      align-items: start;
+      background-color: #ecf0f1; /* light gray */
+    }
+    .card {
+      background: #ffffff; /* trắng */
+      border: 1px solid rgba(44, 62, 80, 0.1); /* border xám nhẹ */
+      border-radius: 14px;
+      padding: 30px 20px;
+      text-align: center;
+      color: #2c3e50; /* charcoal */
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+      opacity: 0; /* cho entry animation */
+    }
+    /* Khi hover lên card */
+    .card:hover {
+      transform: translateY(-8px) rotate(-1deg);
+      background-color: #fdfdfd; /* trắng nhạt */
+      box-shadow: 0 12px 28px rgba(26, 188, 156, 0.15); /* teal shadow */
+      border-color: rgba(26, 188, 156, 0.3);
+    }
+    .card i {
+      font-size: 2.8rem;
+      margin-bottom: 16px;
+      color: #1abc9c; /* teal */
+      transition: color 0.3s ease, transform 0.3s ease;
+    }
+    .card:hover i {
+      color: #16a085; /* teal đậm */
+      transform: rotate(20deg) scale(1.1);
+    }
+    .card h3 {
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+    .card p {
+      font-size: 0.95rem;
+      color: #7f8c8d; /* xám trung tính */
+      line-height: 1.4;
+      margin-bottom: 12px;
+    }
+    .card a {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      text-indent: -9999px;
+      z-index: 1;
+    }
+    /* Entry animation cho card */
+    .card.animate__animated {
+      opacity: 1;
+    }
+    .card:nth-child(1) { --animate-delay: 0.1s; }
+    .card:nth-child(2) { --animate-delay: 0.2s; }
+    .card:nth-child(3) { --animate-delay: 0.3s; }
+    .card:nth-child(4) { --animate-delay: 0.4s; }
+    .card:nth-child(5) { --animate-delay: 0.5s; }
+    .card:nth-child(6) { --animate-delay: 0.6s; }
+    .card:nth-child(7) { --animate-delay: 0.7s; }
+    /* Nếu có thêm card 8,9... có thể tiếp tục tăng dần */
+
+    /* =================================================
+       4. Footer: Địa chỉ, Liên hệ, Mạng xã hội
+       ================================================= */
+    footer {
+      background: #2c3e50; /* navy/đậm */
+      padding: 24px 40px;
+      color: #ecf0f1; /* trắng nhạt */
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 24px;
+    }
+    footer .footer-section {
+      flex: 1 1 220px;
+      min-width: 220px;
+    }
+    footer .footer-section h4 {
+      font-size: 1.1rem;
+      color: #ffffff;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+    footer .footer-section p,
+    footer .footer-section li,
+    footer .footer-section a {
+      font-size: 0.9rem;
+      color: #bdc3c7; /* xám nhạt */
+      line-height: 1.6;
+      text-decoration: none;
+    }
+    footer .footer-section a:hover {
+      color: #1abc9c; /* teal */
+    }
+    footer .social-links a {
+      display: inline-block;
+      margin-right: 12px;
+      font-size: 1.4rem;
+      color: #bdc3c7; /* xám nhạt */
+      transition: color 0.2s ease;
+    }
+    footer .social-links a:hover {
+      color: #1abc9c; /* teal */
+    }
+    footer .footer-bottom {
+      width: 100%;
+      text-align: center;
+      margin-top: 24px;
+      font-size: 0.85rem;
+      color: #95a5a6; /* xám */
+    }
+
+    /* Icon chat cố định góc phải */
+    .chatbot-icon {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      font-size: 2rem;
+      color: #1abc9c; /* teal */
+      cursor: pointer;
+      animation: pulse 2s infinite;
+      z-index: 20;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+
+    /* =================================================
+       5. Responsive
+       ================================================= */
+    @media (max-width: 1024px) {
+      header nav a {
+        font-size: 0.95rem;
+      }
+      main {
+        padding: 90px 24px 24px;
+        gap: 20px;
+      }
+      .card {
+        padding: 24px 16px;
+      }
+      .card i {
+        font-size: 2.4rem;
+      }
+      .card h3 {
+        font-size: 1.2rem;
+      }
+      .card p {
+        font-size: 0.9rem;
+      }
+      footer {
+        padding: 20px 24px;
+      }
+      footer .footer-section {
+        min-width: 200px;
+      }
+    }
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      main {
+        grid-template-columns: 1fr;
+        padding: 80px 16px 16px;
+      }
+      footer {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+      footer .footer-section {
+        min-width: auto;
+      }
+      footer .social-links {
+        margin-top: 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ============================
+       1. Nền Particles.js + Overlay
+       ============================ -->
+  <div id="particles-js"></div>
+
+  <!-- ============================
+       2. Header (Logo + Menu + Decorative Icons)
+       ============================ -->
+  <header id="mainHeader">
+    <!-- Icon trái (trang trí) -->
+    <i class="fas fa-heart decorative-icon left"></i>
+
+    <!-- Logo HIPC -->
+    <a href="#" class="logo-admin">
+      <img src="logo.png" alt="HIPC Logo" class="logo-img" />
+    </a>
+
+    <!-- Hamburger icon (chỉ hiện trên mobile) -->
+    <i class="fas fa-bars" id="menuBtn"></i>
+
+    <!-- Menu sẽ ẩn/hiện khi click -->
+    <nav id="mainNav">
+      <ul>
+        <li>
+          <a href="#">
+            <i class="fas fa-home"></i>
+            Trang chủ
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            <i class="fas fa-users"></i>
+            Người dùng
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            <i class="fas fa-box-open"></i>
+            Sản phẩm
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            <i class="fas fa-tags"></i>
+            Danh mục
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            <i class="fas fa-shopping-cart"></i>  
+            Đơn hàng
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            <i class="fas fa-chart-line"></i>
+            Báo cáo
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            <i class="fas fa-sign-out-alt"></i>
+            Đăng xuất
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Icon phải (trang trí) -->
+    <i class="fas fa-star decorative-icon right"></i>
+  </header>
+
+  <!-- ============================
+       3. Main Dashboard
+       ============================ -->
+  <main>
+    <!-- 1. Quản lý người dùng -->
+    <div class="card animate__animated animate__fadeInUp">
+      <i class="fas fa-users"></i>
+      <h3>Quản lý người dùng</h3>
+      <p>Thêm, sửa, xóa và phân quyền tài khoản Admin/Người dùng.</p>
+      <a href="/admin/users" title="Quản lý người dùng"></a>
+    </div>
+
+    <!-- 2. Quản lý sản phẩm -->
+    <div class="card animate__animated animate__fadeInUp">
+      <i class="fas fa-box-open"></i>
+      <h3>Quản lý sản phẩm</h3>
+      <p>Thêm mới, chỉnh sửa thông tin và xóa/tắt sản phẩm.</p>
+      <a href="/admin/products" title="Quản lý sản phẩm"></a>
+    </div>
+
+    <!-- 3. Quản lý danh mục -->
+    <div class="card animate__animated animate__fadeInUp">
+      <i class="fas fa-tags"></i>
+      <h3>Quản lý danh mục</h3>
+      <p>Tạo, cập nhật và xóa các danh mục sản phẩm.</p>
+      <a href="/admin/categories" title="Quản lý danh mục"></a>
+    </div>
+
+    <!-- 4. Quản lý đơn hàng -->
+    <div class="card animate__animated animate__fadeInUp">
+      <i class="fas fa-shopping-cart"></i>
+      <h3>Quản lý đơn hàng</h3>
+      <p>Xem đơn hàng, cập nhật trạng thái và xử lý vận chuyển.</p>
+      <a href="/admin/orders" title="Quản lý đơn hàng"></a>
+    </div>
+
+    <!-- 5. Quản lý báo cáo -->
+    <div class="card animate__animated animate__fadeInUp">
+      <i class="fas fa-chart-line"></i>
+      <h3>Quản lý báo cáo</h3>
+      <p>Xem doanh thu, thống kê bán hàng và xuất báo cáo.</p>
+      <a href="/admin/reports" title="Quản lý báo cáo"></a>
+    </div>
+
+    <!-- 6. Thông báo -->
+    <div class="card animate__animated animate__fadeInUp">
+      <i class="fas fa-bell"></i>
+      <h3>Thông báo</h3>
+      <p>Tạo, gửi và quản lý thông báo đến người dùng.</p>
+      <a href="/admin/notifications" title="Thông báo"></a>
+    </div>
+
+    <!-- 7. FAQ (thêm card mới) -->
+    <div class="card animate__animated animate__fadeInUp">
+      <i class="fas fa-share"></i>
+      <h3>FAQ</h3>
+      <p>Các câu hỏi thường gặp và hướng dẫn nhanh.</p>
+      <a href="/admin/faq" title="FAQ"></a>
+    </div>
+  </main>
+
+  <!-- ============================
+       4. Footer (Địa chỉ, Liên hệ, Mạng xã hội) + Chatbot Icon
+       ============================ -->
+  <footer>
+    <!-- Thông tin công ty -->
+    <div class="footer-section">
+      <h4>HIPC Công ty TNHH</h4>
+      <p>
+        Địa chỉ: Số 123, Đường ABC, Quận XYZ, Thành phố HCM<br />
+        Điện thoại: (028) 1234 5678<br />
+        Email: support@hipc.vn
+      </p>
+    </div>
+    <!-- Menu Footer -->
+    <div class="footer-section">
+      <h4>Liên kết nhanh</h4>
+      <ul style="list-style: none; padding-left: 0;">
+        <li><a href="/admin/users">Quản lý người dùng</a></li>
+        <li><a href="/admin/products">Quản lý sản phẩm</a></li>
+        <li><a href="/admin/categories">Quản lý danh mục</a></li>
+        <li><a href="/admin/orders">Quản lý đơn hàng</a></li>
+        <li><a href="/admin/reports">Quản lý báo cáo</a></li>
+        <li><a href="/admin/notifications">Thông báo</a></li>
+      </ul>
+    </div>
+    <!-- Mạng xã hội -->
+    <div class="footer-section">
+      <h4>Kết nối với chúng tôi</h4>
+      <div class="social-links">
+        <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+        <a href="#" title="Youtube"><i class="fab fa-youtube"></i></a>
+        <a href="#" title="Github"><i class="fab fa-github"></i></a>
+      </div>
+    </div>
+
+    <!-- Bản quyền -->
+    <div class="footer-bottom">
+      &copy; 2025 HIPC Công ty TNHH. Bản quyền thuộc về HIPC.
+    </div>
+  </footer>
+
+  <!-- Icon chat cố định góc phải -->
+  <i class="fas fa-comments chatbot-icon"></i>
+
+  <!-- ============================
+       5. Script Particles.js + Scroll Header + Toggle Menu + Entry Animations
+       ============================ -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+  <script>
+    // Khởi tạo Particles.js với cấu hình cơ bản
+    particlesJS('particles-js', {
+      "particles": {
+        "number": { "value": 60, "density": { "enable": true, "value_area": 800 } },
+        "color": { "value": "#1abc9c" },
+        "shape": {
+          "type": "circle",
+          "stroke": { "width": 0, "color": "#000000" },
+          "polygon": { "nb_sides": 5 }
+        },
+        "opacity": {
+          "value": 0.4,
+          "random": false,
+          "anim": { "enable": false }
+        },
+        "size": {
+          "value": 3,
+          "random": true,
+          "anim": { "enable": false }
+        },
+        "line_linked": {
+          "enable": true,
+          "distance": 140,
+          "color": "#1abc9c",
+          "opacity": 0.2,
+          "width": 1
+        },
+        "move": {
+          "enable": true,
+          "speed": 2,
+          "direction": "none",
+          "random": false,
+          "straight": false,
+          "out_mode": "out",
+          "bounce": false
+        }
+      },
+      "interactivity": {
+        "detect_on": "canvas",
+        "events": {
+          "onhover": { "enable": true, "mode": "grab" },
+          "onclick": { "enable": true, "mode": "push" },
+          "resize": true
+        },
+        "modes": {
+          "grab": { "distance": 120, "line_linked": { "opacity": 1 } },
+          "push": { "particles_nb": 4 }
+        }
+      },
+      "retina_detect": true
+    });
+
+    // Thêm class scroll cho header khi cuộn trang
+    const header = document.getElementById('mainHeader');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+
+    // Toggle menu trên màn hình nhỏ & đổi icon hamburger
+    const menuBtn = document.getElementById('menuBtn');
+    const mainNav = document.getElementById('mainNav');
+    menuBtn.addEventListener('click', () => {
+      mainNav.classList.toggle('active');
+      if (menuBtn.classList.contains('fa-bars')) {
+        menuBtn.classList.remove('fa-bars');
+        menuBtn.classList.add('fa-times');
+      } else {
+        menuBtn.classList.remove('fa-times');
+        menuBtn.classList.add('fa-bars');
+      }
+    });
+
+    // Entry animations cho card khi DOM load
+    document.addEventListener('DOMContentLoaded', () => {
+      const cards = document.querySelectorAll('.card');
+      cards.forEach(card => {
+        card.classList.add('animate__animated', 'animate__fadeInUp');
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin - Quản lý Sản phẩm</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <!-- Boxicons cho icon đẹp -->
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+  <!-- Font Awesome cho social & spinner -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  <!-- Animate.css cho animation -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+  <style>
+    :root {
+      --primary-color: #4a90e2;
+      --secondary-color: #f5f7fa;
+      --bg-color: #ffffff;
+      --text-color: #333333;
+      --border-radius: 8px;
+      --transition-speed: 0.3s;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Poppins', sans-serif; background: var(--secondary-color); color: var(--text-color); }
+
+    /* Header */
+    header { position: fixed; top: 0; left: 0; width: 100%; background: #2c3e50; z-index: 10; display: flex; align-items: center; justify-content: space-between; padding: 12px 40px; transition: background 0.3s ease, box-shadow 0.3s ease; }
+    header .logo-admin img { max-height: 40px; }
+    #menuBtn { font-size: 1.8rem; color: #ecf0f1; cursor: pointer; display: none; }
+    nav ul { display: flex; list-style: none; }
+    nav li { margin-left: 24px; }
+    nav a { color: #ecf0f1; text-decoration: none; font-weight: 500; display: flex; align-items: center; transition: color 0.2s ease; }
+    nav a i { margin-right: 6px; }
+    nav a:hover { color: #1abc9c; }
+    header.scrolled { background: #23303b; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+    @media (max-width: 768px) {
+      #menuBtn { display: block; }
+      nav { position: absolute; top: 100%; left: 0; width: 100%; background: #34495e; flex-direction: column; align-items: flex-start; max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+      nav.active { max-height: 400px; }
+      nav ul { flex-direction: column; width: 100%; }
+      nav li a { padding: 12px 24px; width: 100%; }
+    }
+
+    /* Container & Table */
+    .container { max-width: 1200px; margin: 100px auto 40px; padding: 0 20px; }
+    .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .header-actions input, .header-actions select {
+      padding: 10px 15px;
+      border: 1px solid #ccc;
+      border-radius: var(--border-radius);
+      width: 250px;
+      transition: border-color var(--transition-speed);
+    }
+    .header-actions input:focus, .header-actions select:focus { border-color: var(--primary-color); outline: none; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 10px 20px;
+      background: var(--primary-color);
+      color: #fff;
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: background var(--transition-speed), transform var(--transition-speed);
+      font-size: 0.9rem;
+    }
+    .btn:hover { background: #357ab8; transform: translateY(-2px); }
+    .btn-secondary { background: #777; }
+    table { width: 100%; border-collapse: collapse; background: var(--bg-color); border-radius: var(--border-radius); overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    thead { background: var(--primary-color); color: #fff; }
+    th, td { padding: 12px 15px; text-align: left; }
+    tbody tr:nth-child(even) { background: #f9f9f9; }
+    tbody tr:hover { background: #eef4fc; }
+    .product-img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; }
+    .actions i { font-size: 1.2rem; margin-right: 10px; cursor: pointer; transition: color var(--transition-speed), transform var(--transition-speed); }
+    .actions i.edit:hover { color: #2ecc71; transform: translateY(-2px); }
+    .actions i.delete:hover { color: #e74c3c; transform: translateY(-2px); }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5); display: none;
+      align-items: center; justify-content: center; z-index: 100;
+    }
+    .modal {
+      background: #fff; border-radius: var(--border-radius);
+      width: 500px; max-width: 90%; padding: 20px; position: relative;
+    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .modal-close { font-size: 1.5rem; cursor: pointer; color: #555; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; margin-bottom: 5px; font-weight: 500; }
+    .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: var(--border-radius); transition: border-color var(--transition-speed); }
+    .form-group input:focus, .form-group textarea:focus { border-color: var(--primary-color); }
+    .modal-footer { text-align: right; margin-top: 10px; }
+
+    /* Footer */
+    footer { background: #2c3e50; padding: 24px 40px; color: #ecf0f1; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 24px; }
+    .footer-section { flex: 1 1 220px; min-width: 220px; }
+    .footer-section h4 { font-size: 1.1rem; margin-bottom: 12px; font-weight: 600; color: #fff; }
+    .footer-section p, .footer-section li, .footer-section a { font-size: 0.9rem; color: #bdc3c7; line-height: 1.6; text-decoration: none; }
+    .footer-section a:hover { color: #1abc9c; }
+    .social-links a { margin-right: 12px; font-size: 1.4rem; color: #bdc3c7; transition: color 0.2s; }
+    .social-links a:hover { color: #1abc9c; }
+    .footer-bottom { width: 100%; text-align: center; margin-top: 24px; font-size: 0.85rem; color: #95a5a6; }
+
+    /* Chatbot Icon */
+    .chatbot-icon { position: fixed; bottom: 24px; right: 24px; font-size: 2rem; color: #1abc9c; cursor: pointer; animation: pulse 2s infinite; z-index: 20; }
+    @keyframes pulse { 0%,100%{transform:scale(1);}50%{transform:scale(1.2);} }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header id="mainHeader">
+    <a href="#" class="logo-admin"><img src="logo.png" alt="Logo" /></a>
+    <i class="fas fa-bars" id="menuBtn"></i>
+    <nav id="mainNav"><ul>
+      <li><a href="/admin"><i class="fas fa-home"></i>Trang chủ</a></li>
+      <li><a href="/admin/users"><i class="fas fa-users"></i>Người dùng</a></li>
+      <li><a href="/admin/products"><i class="fas fa-box-open"></i>Sản phẩm</a></li>
+      <li><a href="/admin/categories"><i class="fas fa-tags"></i>Danh mục</a></li>
+      <li><a href="/admin/orders"><i class="fas fa-shopping-cart"></i>Đơn hàng</a></li>
+      <li><a href="/admin/reports"><i class="fas fa-chart-line"></i>Báo cáo</a></li>
+      <li><a href="/logout"><i class="fas fa-sign-out-alt"></i>Đăng xuất</a></li>
+    </ul></nav>
+  </header>
+
+  <!-- Main -->
+  <div class="container">
+    <div class="header-actions">
+      <input type="text" id="searchInput" placeholder="Tìm sản phẩm..." />
+      <button id="addBtn" class="btn"><i class="bx bx-plus"></i> Thêm sản phẩm</button>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Hình</th><th>Tên</th><th>Giá</th><th>Kho</th><th>Hành động</th>
+      </tr></thead>
+      <tbody id="productTable"></tbody>
+    </table>
+  </div>
+
+  <!-- Modal -->
+  <div id="modalOverlay" class="modal-overlay">
+    <div id="modal" class="modal animate__animated">
+      <div class="modal-header">
+        <h3 id="modalTitle">Thêm sản phẩm</h3>
+        <i id="modalClose" class="bx bx-x modal-close"></i>
+      </div>
+      <div class="modal-body">
+        <div class="form-group"><label for="pName">Tên</label><input id="pName" type="text" /></div>
+        <div class="form-group"><label for="pPrice">Giá</label><input id="pPrice" type="number" /></div>
+        <div class="form-group"><label for="pStock">Tồn kho</label><input id="pStock" type="number" /></div>
+        <div class="form-group"><label for="pImage">URL Ảnh</label><input id="pImage" type="text" /></div>
+        <div class="form-group"><label for="pDesc">Mô tả</label><textarea id="pDesc" rows="3"></textarea></div>
+        <div class="form-group"><label for="pSpecs">Thông số kỹ thuật</label><textarea id="pSpecs" rows="2"></textarea></div>
+      </div>
+      <div class="modal-footer">
+        <button id="modalCancel" class="btn btn-secondary"><i class="bx bx-x"></i> Hủy</button>
+        <button id="modalSave" class="btn"><i class="bx bx-check"></i> Lưu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer> ... </footer>
+  <i class="fas fa-comments chatbot-icon"></i>
+
+  <!-- Scripts -->
+  <script>
+    // Helpers
+    function showToast(msg, isError = false) {
+      const t = document.createElement('div');
+      t.textContent = msg;
+      t.style.position = 'fixed';
+      t.style.bottom = '20px'; t.style.right = '20px';
+      t.style.padding = '12px 20px';
+      t.style.background = isError ? '#e74c3c' : '#1abc9c';
+      t.style.color = '#fff'; t.style.borderRadius = '5px';
+      t.style.zIndex = 200; document.body.appendChild(t);
+      setTimeout(() => { t.style.transition = 'opacity 0.5s'; t.style.opacity = '0'; setTimeout(() => document.body.removeChild(t), 500); }, 3000);
+    }
+
+    // Modal logic
+    const overlay = document.getElementById('modalOverlay'), modal = document.getElementById('modal');
+    const inputs = { name: pName, price: pPrice, stock: pStock, image: pImage, description: pDesc, specifications: pSpecs };
+    let mode = 'add', editId = null;
+    document.getElementById('addBtn').addEventListener('click', () => openModal('add'));
+    document.getElementById('modalClose').addEventListener('click', closeModal);
+    document.getElementById('modalCancel').addEventListener('click', closeModal);
+    document.getElementById('modalSave').addEventListener('click', saveProduct);
+
+    function openModal(m, data={}) {
+      mode = m; editId = data._id || null;
+      document.getElementById('modalTitle').textContent = m === 'add' ? 'Thêm sản phẩm' : 'Chỉnh sửa sản phẩm';
+      Object.keys(inputs).forEach(k => { inputs[k].value = data[k] || ''; });
+      overlay.style.display = 'flex'; modal.classList.remove('animate__fadeOutUp'); modal.classList.add('animate__fadeInDown');
+    }
+    function closeModal() {
+      modal.classList.remove('animate__fadeInDown'); modal.classList.add('animate__fadeOutUp');
+      modal.addEventListener('animationend', () => overlay.style.display = 'none', { once: true });
+    }
+
+    // CRUD
+    const api = 'https://hipc-sever.onrender.com/product'; const tb = document.getElementById('productTable');
+    async function fetchProducts() {
+      try { const res = await fetch(api), list = await res.json(); renderTable(list); }
+      catch { tb.innerHTML='<tr><td colspan="5">Không thể tải dữ liệu.</td></tr>'; }
+    }
+    function renderTable(arr) {
+      tb.innerHTML=''; arr.forEach(p=>{
+        const r=document.createElement('tr');
+        r.innerHTML = `
+          <td><img src="${p.image}" class="product-img"/></td>
+          <td>${p.name}</td>
+          <td>${p.price.toLocaleString('vi-VN')}₫</td>
+          <td>${p.stock}</td>
+          <td class="actions">
+            <i class='bx bx-edit edit' title="Chỉnh sửa"></i>
+            <i class='bx bx-trash delete' title="Xóa"></i>
+          </td>`;
+        // events
+        r.querySelector('.edit').addEventListener('click',()=>openModal('edit',p));
+        r.querySelector('.delete').addEventListener('click',()=> deleteProduct(p._id));
+        tb.appendChild(r);
+      });
+    }
+    async function saveProduct() {
+      const payload = { name: inputs.name.value, price: +inputs.price.value, stock: +inputs.stock.value, image: inputs.image.value, description: inputs.description.value, specifications: inputs.specifications.value };
+      try {
+        let res;
+        if (mode==='add') res = await fetch(api,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+        else res = await fetch(`${api}/${editId}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+        if (!res.ok) throw 'Lỗi lưu dữ liệu';
+        showToast('Lưu thành công'); closeModal(); fetchProducts();
+      } catch (e) { showToast(e,true); }
+    }
+    async function deleteProduct(id) {
+      if (!confirm('Bạn có chắc muốn xóa?')) return;
+      try { const res = await fetch(`${api}/${id}`,{method:'DELETE'}); if (!res.ok) throw ''; showToast('Xóa thành công'); fetchProducts(); }
+      catch { showToast('Xóa thất bại', true); }
+    }
+
+    // Search filter & menu + scroll
+    searchInput.addEventListener('input',e=>{ const v=e.target.value.toLowerCase(); document.querySelectorAll('#productTable tr').forEach(r=>r.style.display=r.cells[1].textContent.toLowerCase().includes(v)?'':'none'); });
+    menuBtn.addEventListener('click',()=>{ mainNav.classList.toggle('active'); menuBtn.classList.toggle('fa-times'); });
+    window.addEventListener('scroll',()=>mainHeader.classList.toggle('scrolled',window.scrollY>50));
+
+    // Init
+    fetchProducts();
+  </script>
+</body>
+</html>
